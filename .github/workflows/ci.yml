@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  lint-build-test:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare Xcode & iOS Simulator runtime
+        run: |
+          chmod +x .github/scripts/prepare-ios-ci.sh
+          .github/scripts/prepare-ios-ci.sh
+        timeout-minutes: 50
+
+      - name: SwiftLint
+        run: |
+          if command -v swiftlint >/dev/null 2>&1; then
+            swiftlint --strict
+          else
+            echo "SwiftLint not on PATH; skipping."
+          fi
+
+      - name: Build & test (iOS Simulator)
+        env:
+          IPHONEOS_DEPLOYMENT_TARGET: "17.5"
+        run: |
+          set -euo pipefail
+          chmod +x .github/scripts/ensure-ci-simulator.sh
+          chmod +x .github/scripts/xcode-sim-destination.sh
+          echo "=== simctl: iOS runtimes ==="
+          xcrun simctl list runtimes | grep -i ios || true
+          SIM_UDID="$(.github/scripts/ensure-ci-simulator.sh)"
+          DEST="$(.github/scripts/xcode-sim-destination.sh ShiftDrop.xcodeproj ShiftDrop "${SIM_UDID}")"
+          echo "Destination: ${DEST}"
+          xcodebuild test \
+            -project ShiftDrop.xcodeproj \
+            -scheme ShiftDrop \
+            -sdk iphonesimulator \
+            -destination "${DEST}" \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
+            EXCLUDED_ARCHS=x86_64 \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults.xcresult
+          if-no-files-found: ignore
