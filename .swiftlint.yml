@@ -1,0 +1,20 @@
+# SwiftLint — pragmatic defaults for a UIKit app (tighten rules over time).
+disabled_rules:
+  - line_length
+  - trailing_whitespace
+  - control_statement
+  - statement_position
+  - explicit_init
+  - function_name_whitespace
+  - vertical_whitespace
+  - trailing_newline
+  - function_body_length
+  - type_body_length
+  - opening_brace
+opt_in_rules:
+  - closure_spacing
+  - overridden_super_call
+included:
+  - ShiftDrop
+excluded:
+  - Pods
