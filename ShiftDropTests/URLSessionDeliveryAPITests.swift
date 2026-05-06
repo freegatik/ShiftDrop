@@ -1,71 +1,11 @@
 import XCTest
 @testable import ShiftDrop
 
-final class MockURLProtocol: URLProtocol {
-
-    nonisolated(unsafe) static var handler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
-
-    static func reset() {
-        handler = nil
-    }
-
-    override class func canInit(with request: URLRequest) -> Bool {
-        true
-    }
-
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-        request
-    }
-
-    override func startLoading() {
-        guard let handler = MockURLProtocol.handler else {
-            XCTFail("MockURLProtocol.handler not set")
-            return
-        }
-        do {
-            let (response, data) = try handler(request)
-            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            client?.urlProtocol(self, didLoad: data)
-            client?.urlProtocolDidFinishLoading(self)
-        } catch {
-            client?.urlProtocol(self, didFailWithError: error)
-        }
-    }
-
-    override func stopLoading() {}
-}
-
 final class URLSessionDeliveryAPITests: XCTestCase {
 
     override func tearDown() {
         MockURLProtocol.reset()
         super.tearDown()
-    }
-
-    /// URLSession often forwards POST bodies via `httpBodyStream`; `httpBody` may be nil in `URLProtocol`.
-    private static func httpBodyData(from request: URLRequest) -> Data? {
-        if let body = request.httpBody, !body.isEmpty {
-            return body
-        }
-        guard let stream = request.httpBodyStream else {
-            return nil
-        }
-        stream.open()
-        defer { stream.close() }
-        var data = Data()
-        let bufferSize = 4096
-        var buffer = [UInt8](repeating: 0, count: bufferSize)
-        while stream.hasBytesAvailable {
-            let read = stream.read(&buffer, maxLength: bufferSize)
-            if read > 0 {
-                data.append(contentsOf: buffer.prefix(read))
-            } else if read < 0 {
-                return nil
-            } else {
-                break
-            }
-        }
-        return data.isEmpty ? nil : data
     }
 
     private func sessionWithMock() -> URLSession {
@@ -118,7 +58,7 @@ final class URLSessionDeliveryAPITests: XCTestCase {
         MockURLProtocol.handler = { request in
             XCTAssertEqual(request.httpMethod, "POST")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
-            XCTAssertNotNil(URLSessionDeliveryAPITests.httpBodyData(from: request))
+            XCTAssertNotNil(TestHTTPBody.data(from: request))
             let body = """
             {"success":true,"reason":null,"options":[
               {"id":"a","days":3,"price":100,"name":"Обычная","type":"DEFAULT"},
@@ -136,5 +76,133 @@ final class URLSessionDeliveryAPITests: XCTestCase {
         let api = URLSessionDeliveryAPI(baseURLString: "https://example.test/", session: sessionWithMock())
         let result = try await api.calculateDelivery(req)
         XCTAssertEqual(result.options.count, 2)
+    }
+
+    func testFetchPackageTypes_GET_success() async throws {
+        MockURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "GET")
+            XCTAssertTrue(try XCTUnwrap(request.url?.absoluteString).hasSuffix("delivery/package/types"))
+            let body = """
+            {"success":true,"reason":null,"packages":[]}
+            """.data(using: .utf8)!
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, body)
+        }
+        let api = URLSessionDeliveryAPI(baseURLString: "https://example.test/", session: sessionWithMock())
+        let result = try await api.fetchPackageTypes()
+        XCTAssertTrue(result.success)
+    }
+
+    func testPlaceOrder_POST_body() async throws {
+        MockURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertTrue(try XCTUnwrap(request.url?.absoluteString).hasSuffix("delivery/order"))
+            XCTAssertNotNil(TestHTTPBody.data(from: request))
+            let body = """
+            {"success":true,"reason":null,"order":{"status":1,"cancellable":false}}
+            """.data(using: .utf8)!
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, body)
+        }
+        let order = DeliveryOrderRequest(
+            senderPoint: SenderPointRequest(id: "1", name: "M", latitude: 1, longitude: 2),
+            senderAddress: SenderAddressRequest(street: "s", house: "h", apartment: nil, comment: nil),
+            sender: Sender(firstname: "A", lastname: "B", middlename: nil, phone: "0"),
+            receiverPoint: ReceiverPointRequest(id: "2", name: "R", latitude: 3, longitude: 4),
+            receiverAddress: ReceiverAddressRequest(street: "rs", house: "rh", apartment: nil, comment: nil),
+            receiver: Receiver(firstname: "X", lastname: "Y", middlename: nil, phone: "9"),
+            payer: "SENDER",
+            option: OptionsRequest(id: "opt", days: 1, price: 10, name: "N", type: "DEFAULT")
+        )
+        let api = URLSessionDeliveryAPI(baseURLString: "https://example.test/", session: sessionWithMock())
+        let result = try await api.placeOrder(order)
+        XCTAssertTrue(result.success)
+    }
+
+    func testEmptyResponseBody_mapsToNoData() async {
+        MockURLProtocol.handler = { request in
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+        let api = URLSessionDeliveryAPI(baseURLString: "https://example.test/", session: sessionWithMock())
+        do {
+            _ = try await api.fetchDeliveryPoints()
+            XCTFail("expected throw")
+        } catch let e as NetworkError {
+            if case .noData = e {} else { XCTFail("\(e)") }
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+
+    func testInvalidJSON_mapsToDecodingFailed() async {
+        MockURLProtocol.handler = { request in
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, "{".data(using: .utf8)!)
+        }
+        let api = URLSessionDeliveryAPI(baseURLString: "https://example.test/", session: sessionWithMock())
+        do {
+            _ = try await api.fetchDeliveryPoints()
+            XCTFail("expected throw")
+        } catch let e as NetworkError {
+            if case .decodingFailed = e {} else { XCTFail("\(e)") }
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+
+    func testSessionTransport_mapsToTransport() async {
+        MockURLProtocol.handler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+        let api = URLSessionDeliveryAPI(baseURLString: "https://example.test/", session: sessionWithMock())
+        do {
+            _ = try await api.fetchDeliveryPoints()
+            XCTFail("expected throw")
+        } catch let e as NetworkError {
+            if case .transport = e {} else { XCTFail("\(e)") }
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+
+    func testInvalidBaseURL_mapsToInvalidURL() async {
+        let api = URLSessionDeliveryAPI(
+            baseURLString: "https://example.com\0/",
+            session: sessionWithMock()
+        )
+        do {
+            _ = try await api.fetchDeliveryPoints()
+            XCTFail("expected throw")
+        } catch let e as NetworkError {
+            if case .invalidURL = e {} else { XCTFail("\(e)") }
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+
+    func testEncodeFailure_mapsToEncodingFailed() async {
+        let api = URLSessionDeliveryAPI(
+            baseURLString: "https://example.test/",
+            session: sessionWithMock(),
+            encoder: ThrowingJSONEncoder()
+        )
+        let req = DeliveryCalcRequest(
+            package: PackageRequest(length: 1, width: 2, weight: 3, height: 4),
+            senderPoint: PointRequest(latitude: 55, longitude: 37),
+            receiverPoint: PointRequest(latitude: 59, longitude: 30)
+        )
+        MockURLProtocol.handler = { request in
+            XCTFail("should not reach network: \(request)")
+            throw URLError(.badURL)
+        }
+        do {
+            _ = try await api.calculateDelivery(req)
+            XCTFail("expected throw")
+        } catch let e as NetworkError {
+            if case .encodingFailed = e {} else { XCTFail("\(e)") }
+        } catch {
+            XCTFail("\(error)")
+        }
     }
 }
