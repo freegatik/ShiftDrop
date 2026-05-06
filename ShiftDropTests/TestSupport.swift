@@ -68,7 +68,7 @@ enum TestHTTPBody {
 
 // MARK: - API mock
 
-private enum MockDeliveryAPIFixtures {
+enum MockDeliveryAPIFixtures {
     static func emptyPoints() throws -> DeliveryPointsResponse {
         let data = """
         {"success":true,"reason":null,"points":[]}
@@ -88,6 +88,26 @@ private enum MockDeliveryAPIFixtures {
         {"success":true,"reason":null,"order":{"status":1,"cancellable":true}}
         """.data(using: .utf8)!
         return try JSONDecoder().decode(DeliveryOrderResponse.self, from: data)
+    }
+
+    static func sampleTwoPoints() throws -> DeliveryPointsResponse {
+        let data = """
+        {"success":true,"reason":null,"points":[
+          {"id":"1","name":"Москва","latitude":55.7558,"longitude":37.6173},
+          {"id":"2","name":"Санкт-Петербург","latitude":59.9343,"longitude":30.3351}
+        ]}
+        """.data(using: .utf8)!
+        return try JSONDecoder().decode(DeliveryPointsResponse.self, from: data)
+    }
+
+    static func sampleTwoPackages() throws -> DeliveryPackageTypesResponse {
+        let data = """
+        {"success":true,"reason":null,"packages":[
+          {"id":"1","name":"Конверт","length":42,"width":36,"weight":2,"height":5},
+          {"id":"2","name":"Коробка","length":30,"width":20,"weight":5,"height":15}
+        ]}
+        """.data(using: .utf8)!
+        return try JSONDecoder().decode(DeliveryPackageTypesResponse.self, from: data)
     }
 }
 

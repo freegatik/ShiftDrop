@@ -64,6 +64,7 @@
 		E2D1C4B5A69748302190FE14 /* AppCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE13 /* AppCoordinatorTests.swift */; };
 		E2D1C4B5A69748302190FE16 /* UIViewControllerAlertsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE15 /* UIViewControllerAlertsTests.swift */; };
 		E2D1C4B5A69748302190FE18 /* UIKitFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE17 /* UIKitFlowTests.swift */; };
+		E2D1C4B5A69748302190FE1A /* TableListViewControllersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE19 /* TableListViewControllersTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -126,6 +127,7 @@
 		E2D1C4B5A69748302190FE13 /* AppCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinatorTests.swift; sourceTree = "<group>"; };
 		E2D1C4B5A69748302190FE15 /* UIViewControllerAlertsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerAlertsTests.swift; sourceTree = "<group>"; };
 		E2D1C4B5A69748302190FE17 /* UIKitFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitFlowTests.swift; sourceTree = "<group>"; };
+		E2D1C4B5A69748302190FE19 /* TableListViewControllersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableListViewControllersTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -396,6 +398,7 @@
 				E2D1C4B5A69748302190FE11 /* AppCoreLayerTests.swift */,
 				E2D1C4B5A69748302190FE13 /* AppCoordinatorTests.swift */,
 				E2D1C4B5A69748302190FE0B /* DeliveryDTOCodableTests.swift */,
+				E2D1C4B5A69748302190FE19 /* TableListViewControllersTests.swift */,
 				E2D1C4B5A69748302190FE0F /* TestSupport.swift */,
 				E2D1C4B5A69748302190FE17 /* UIKitFlowTests.swift */,
 				E2D1C4B5A69748302190FE0D /* URLSessionDeliveryAPITests.swift */,
@@ -578,6 +581,7 @@
 				E2D1C4B5A69748302190FE12 /* AppCoreLayerTests.swift in Sources */,
 				E2D1C4B5A69748302190FE14 /* AppCoordinatorTests.swift in Sources */,
 				E2D1C4B5A69748302190FE0C /* DeliveryDTOCodableTests.swift in Sources */,
+				E2D1C4B5A69748302190FE1A /* TableListViewControllersTests.swift in Sources */,
 				E2D1C4B5A69748302190FE10 /* TestSupport.swift in Sources */,
 				E2D1C4B5A69748302190FE18 /* UIKitFlowTests.swift in Sources */,
 				E2D1C4B5A69748302190FE0E /* URLSessionDeliveryAPITests.swift in Sources */,
