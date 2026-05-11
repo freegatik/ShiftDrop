@@ -65,6 +65,8 @@
 		E2D1C4B5A69748302190FE16 /* UIViewControllerAlertsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE15 /* UIViewControllerAlertsTests.swift */; };
 		E2D1C4B5A69748302190FE18 /* UIKitFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE17 /* UIKitFlowTests.swift */; };
 		E2D1C4B5A69748302190FE1A /* TableListViewControllersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C4B5A69748302190FE19 /* TableListViewControllersTests.swift */; };
+		F1E2D3C4B5A697480021AA02 /* ShiftDropSmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A697480021AA01 /* ShiftDropSmokeUITests.swift */; };
+		F1E2D3C4B5A697480021AA22 /* ViewControllerCalculationSurfaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E2D3C4B5A697480021AA21 /* ViewControllerCalculationSurfaceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -128,6 +130,9 @@
 		E2D1C4B5A69748302190FE15 /* UIViewControllerAlertsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerAlertsTests.swift; sourceTree = "<group>"; };
 		E2D1C4B5A69748302190FE17 /* UIKitFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitFlowTests.swift; sourceTree = "<group>"; };
 		E2D1C4B5A69748302190FE19 /* TableListViewControllersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableListViewControllersTests.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A697480021AA04 /* ShiftDropUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShiftDropUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1E2D3C4B5A697480021AA01 /* ShiftDropSmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShiftDropSmokeUITests.swift; sourceTree = "<group>"; };
+		F1E2D3C4B5A697480021AA21 /* ViewControllerCalculationSurfaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerCalculationSurfaceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +151,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F1E2D3C4B5A697480021AA07 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -154,6 +166,7 @@
 			children = (
 				FC6D62BA2C342E4400A47C18 /* ShiftDrop */,
 				E2D1C4B5A69748302190FE02 /* ShiftDropTests */,
+				F1E2D3C4B5A697480021AA05 /* ShiftDropUITests */,
 				FC6D62B92C342E4400A47C18 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -162,6 +175,7 @@
 			isa = PBXGroup;
 			children = (
 				E2D1C4B5A69748302190FE01 /* ShiftDropTests.xctest */,
+				F1E2D3C4B5A697480021AA04 /* ShiftDropUITests.xctest */,
 				FC6D62B82C342E4400A47C18 /* ShiftDrop.app */,
 			);
 			name = Products;
@@ -401,10 +415,19 @@
 				E2D1C4B5A69748302190FE19 /* TableListViewControllersTests.swift */,
 				E2D1C4B5A69748302190FE0F /* TestSupport.swift */,
 				E2D1C4B5A69748302190FE17 /* UIKitFlowTests.swift */,
+				F1E2D3C4B5A697480021AA21 /* ViewControllerCalculationSurfaceTests.swift */,
 				E2D1C4B5A69748302190FE0D /* URLSessionDeliveryAPITests.swift */,
 				E2D1C4B5A69748302190FE15 /* UIViewControllerAlertsTests.swift */,
 			);
 			path = ShiftDropTests;
+			sourceTree = "<group>";
+		};
+		F1E2D3C4B5A697480021AA05 /* ShiftDropUITests */ = {
+			isa = PBXGroup;
+			children = (
+				F1E2D3C4B5A697480021AA01 /* ShiftDropSmokeUITests.swift */,
+			);
+			path = ShiftDropUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -418,6 +441,13 @@
 			remoteGlobalIDString = FC6D62B72C342E4400A47C18;
 			remoteInfo = ShiftDrop;
 		};
+		F1E2D3C4B5A697480021AA08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FC6D62B02C342E4400A47C18 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FC6D62B72C342E4400A47C18;
+			remoteInfo = ShiftDrop;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXTargetDependency section */
@@ -425,6 +455,11 @@
 			isa = PBXTargetDependency;
 			target = FC6D62B72C342E4400A47C18 /* ShiftDrop */;
 			targetProxy = E2D1C4B5A69748302190FE06 /* PBXContainerItemProxy */;
+		};
+		F1E2D3C4B5A697480021AA09 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FC6D62B72C342E4400A47C18 /* ShiftDrop */;
+			targetProxy = F1E2D3C4B5A697480021AA08 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -466,6 +501,23 @@
 			productReference = E2D1C4B5A69748302190FE01 /* ShiftDropTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		F1E2D3C4B5A697480021AA03 /* ShiftDropUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1E2D3C4B5A697480021AA0A /* Build configuration list for PBXNativeTarget "ShiftDropUITests" */;
+			buildPhases = (
+				F1E2D3C4B5A697480021AA06 /* Sources */,
+				F1E2D3C4B5A697480021AA07 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F1E2D3C4B5A697480021AA09 /* PBXTargetDependency */,
+			);
+			name = ShiftDropUITests;
+			productName = ShiftDropUITests;
+			productReference = F1E2D3C4B5A697480021AA04 /* ShiftDropUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -480,6 +532,10 @@
 						CreatedOnToolsVersion = 15.4;
 					};
 					E2D1C4B5A69748302190FE03 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = FC6D62B72C342E4400A47C18;
+					};
+					F1E2D3C4B5A697480021AA03 = {
 						CreatedOnToolsVersion = 15.4;
 						TestTargetID = FC6D62B72C342E4400A47C18;
 					};
@@ -503,6 +559,7 @@
 			targets = (
 				FC6D62B72C342E4400A47C18 /* ShiftDrop */,
 				E2D1C4B5A69748302190FE03 /* ShiftDropTests */,
+				F1E2D3C4B5A697480021AA03 /* ShiftDropUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -586,6 +643,15 @@
 				E2D1C4B5A69748302190FE18 /* UIKitFlowTests.swift in Sources */,
 				E2D1C4B5A69748302190FE0E /* URLSessionDeliveryAPITests.swift in Sources */,
 				E2D1C4B5A69748302190FE16 /* UIViewControllerAlertsTests.swift in Sources */,
+				F1E2D3C4B5A697480021AA22 /* ViewControllerCalculationSurfaceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F1E2D3C4B5A697480021AA06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1E2D3C4B5A697480021AA02 /* ShiftDropSmokeUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -776,27 +842,6 @@
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section */
-
-/* Begin XCConfigurationList section */
-		FC6D62B32C342E4400A47C18 /* Build configuration list for PBXProject "ShiftDrop" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FC6D62CA2C342E4600A47C18 /* Debug */,
-				FC6D62CB2C342E4600A47C18 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FC6D62CC2C342E4600A47C18 /* Build configuration list for PBXNativeTarget "ShiftDrop" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FC6D62CD2C342E4600A47C18 /* Debug */,
-				FC6D62CE2C342E4600A47C18 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		E2D1C4B5A69748302190FE09 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -831,11 +876,75 @@
 			};
 			name = Release;
 		};
+		F1E2D3C4B5A697480021AA0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BUF892U9LY;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shift.ShiftDropUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ShiftDrop;
+			};
+			name = Debug;
+		};
+		F1E2D3C4B5A697480021AA0C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BUF892U9LY;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shift.ShiftDropUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ShiftDrop;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FC6D62B32C342E4400A47C18 /* Build configuration list for PBXProject "ShiftDrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC6D62CA2C342E4600A47C18 /* Debug */,
+				FC6D62CB2C342E4600A47C18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC6D62CC2C342E4600A47C18 /* Build configuration list for PBXNativeTarget "ShiftDrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC6D62CD2C342E4600A47C18 /* Debug */,
+				FC6D62CE2C342E4600A47C18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E2D1C4B5A69748302190FE08 /* Build configuration list for PBXNativeTarget "ShiftDropTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2D1C4B5A69748302190FE09 /* Debug */,
 				E2D1C4B5A69748302190FE0A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F1E2D3C4B5A697480021AA0A /* Build configuration list for PBXNativeTarget "ShiftDropUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1E2D3C4B5A697480021AA0B /* Debug */,
+				F1E2D3C4B5A697480021AA0C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

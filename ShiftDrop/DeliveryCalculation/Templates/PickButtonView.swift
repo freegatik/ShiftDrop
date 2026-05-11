@@ -128,6 +128,9 @@ class PickButtonView: UIView {
     func setValue(_ title: String) {
         valueLabel.text = title
     }
+
+    /// Surface for `@testable` unit tests (seed values and user edits).
+    var testDisplayedValue: String { valueLabel.text ?? "" }
     
     func setClickableWords(_ words: [String]) {
         for view in clickableWords.arrangedSubviews {

@@ -1,3 +1,10 @@
+//
+//  DeliveryDTOCodableTests.swift
+//  ShiftDropTests
+//
+//  Created by Anton Solovev on 11.05.2026.
+//
+
 import XCTest
 @testable import ShiftDrop
 

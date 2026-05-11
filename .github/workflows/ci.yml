@@ -2,47 +2,96 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  IPHONEOS_DEPLOYMENT_TARGET: "17.5"
+  XCODE_PROJECT: ShiftDrop.xcodeproj
+  XCODE_SCHEME: ShiftDrop
 
 jobs:
-  lint-build-test:
+  swiftlint:
+    name: SwiftLint
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare Xcode & iOS Simulator runtime
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Lint app and UI tests
+        run: swiftlint lint --strict --reporter github-actions-logging
+
+  build:
+    name: Build (iOS Simulator)
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare Xcode and iOS Simulator runtime
         run: |
           chmod +x .github/scripts/prepare-ios-ci.sh
           .github/scripts/prepare-ios-ci.sh
-        timeout-minutes: 50
+        timeout-minutes: 40
 
-      - name: SwiftLint
+      - name: Compile
         run: |
-          if command -v swiftlint >/dev/null 2>&1; then
-            swiftlint --strict
-          else
-            echo "SwiftLint not on PATH; skipping."
-          fi
+          set -euo pipefail
+          xcodebuild build \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            EXCLUDED_ARCHS=x86_64
 
-      - name: Build & test (iOS Simulator)
-        env:
-          IPHONEOS_DEPLOYMENT_TARGET: "17.5"
+  unit-tests:
+    name: Unit tests (ShiftDropTests)
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare Xcode and iOS Simulator runtime
+        run: |
+          chmod +x .github/scripts/prepare-ios-ci.sh
+          .github/scripts/prepare-ios-ci.sh
+        timeout-minutes: 40
+
+      - name: Resolve simulator destination
+        id: dest
         run: |
           set -euo pipefail
           chmod +x .github/scripts/ensure-ci-simulator.sh
           chmod +x .github/scripts/xcode-sim-destination.sh
-          echo "=== simctl: iOS runtimes ==="
-          xcrun simctl list runtimes | grep -i ios || true
           SIM_UDID="$(.github/scripts/ensure-ci-simulator.sh)"
-          DEST="$(.github/scripts/xcode-sim-destination.sh ShiftDrop.xcodeproj ShiftDrop "${SIM_UDID}")"
-          echo "Destination: ${DEST}"
+          DEST="$(.github/scripts/xcode-sim-destination.sh "$XCODE_PROJECT" "$XCODE_SCHEME" "${SIM_UDID}")"
+          echo "destination=${DEST}" >>"$GITHUB_OUTPUT"
+          echo "Resolved: ${DEST}"
+
+      - name: Run unit tests with coverage
+        run: |
+          set -euo pipefail
           xcodebuild test \
-            -project ShiftDrop.xcodeproj \
-            -scheme ShiftDrop \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
             -sdk iphonesimulator \
-            -destination "${DEST}" \
+            -destination "${{ steps.dest.outputs.destination }}" \
+            -only-testing:ShiftDropTests \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
             EXCLUDED_ARCHS=x86_64 \
@@ -50,10 +99,120 @@ jobs:
             CODE_SIGN_IDENTITY=- \
             CODE_SIGNING_REQUIRED=NO
 
-      - name: Upload test results
+      - name: Upload unit test xcresult
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: unit-test-results
           path: TestResults.xcresult
           if-no-files-found: ignore
+
+  ui-tests:
+    name: UI tests (ShiftDropUITests)
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare Xcode and iOS Simulator runtime
+        run: |
+          chmod +x .github/scripts/prepare-ios-ci.sh
+          .github/scripts/prepare-ios-ci.sh
+        timeout-minutes: 40
+
+      - name: Resolve simulator destination
+        id: dest
+        run: |
+          set -euo pipefail
+          chmod +x .github/scripts/ensure-ci-simulator.sh
+          chmod +x .github/scripts/xcode-sim-destination.sh
+          SIM_UDID="$(.github/scripts/ensure-ci-simulator.sh)"
+          DEST="$(.github/scripts/xcode-sim-destination.sh "$XCODE_PROJECT" "$XCODE_SCHEME" "${SIM_UDID}")"
+          echo "destination=${DEST}" >>"$GITHUB_OUTPUT"
+          echo "Resolved: ${DEST}"
+
+      - name: Run UI tests
+        run: |
+          set -euo pipefail
+          xcodebuild test \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphonesimulator \
+            -destination "${{ steps.dest.outputs.destination }}" \
+            -only-testing:ShiftDropUITests \
+            -resultBundlePath UITestResults.xcresult \
+            EXCLUDED_ARCHS=x86_64 \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Upload UI test xcresult
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: UITestResults.xcresult
+          if-no-files-found: ignore
+
+  coverage-report:
+    name: Coverage report
+    needs: [unit-tests]
+    runs-on: macos-15
+    if: always()
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download unit test results
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-results
+          path: unit-out
+
+      - name: Generate xccov summary and JSON
+        run: |
+          set -euo pipefail
+          chmod +x .github/scripts/xccov-to-summary.sh
+          XC="$(find unit-out -name '*.xcresult' -type d 2>/dev/null | head -1 || true)"
+          if [[ -z "${XC}" ]]; then
+            echo "No xcresult bundle in artifact; skipping coverage."
+            echo "## Coverage" >>"$GITHUB_STEP_SUMMARY"
+            echo "_No xcresult artifact (unit tests may have failed before producing output)._" >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          mkdir -p coverage-out
+          .github/scripts/xccov-to-summary.sh "$XC" "coverage-out/coverage.json"
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-out
+          if-no-files-found: ignore
+
+  metrics:
+    name: Repository metrics
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift file counts and LOC
+        run: |
+          set -euo pipefail
+          app_files=$(find ShiftDrop -name '*.swift' -print | wc -l | tr -d ' ')
+          unit_files=$(find ShiftDropTests -name '*.swift' -print | wc -l | tr -d ' ')
+          ui_files=$(find ShiftDropUITests -name '*.swift' -print | wc -l | tr -d ' ')
+          app_loc=$(find ShiftDrop -name '*.swift' -print0 | xargs -0 wc -l 2>/dev/null | tail -1 | awk '{print $1}')
+          {
+            echo "## Repository statistics"
+            echo ""
+            echo "| Scope | Swift files | Non-blank lines (approx.) |"
+            echo "| --- | ---: | ---: |"
+            echo "| App (ShiftDrop) | ${app_files} | ${app_loc:-0} |"
+            echo "| Unit tests | ${unit_files} | — |"
+            echo "| UI tests | ${ui_files} | — |"
+            echo ""
+            echo "_Line counts from \`wc -l\` over \`*.swift\` in the app target._"
+          } >>"$GITHUB_STEP_SUMMARY"

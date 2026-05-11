@@ -41,6 +41,17 @@
                ReferencedContainer = "container:ShiftDrop.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F1E2D3C4B5A697480021AA03"
+               BuildableName = "ShiftDropUITests.xctest"
+               BlueprintName = "ShiftDropUITests"
+               ReferencedContainer = "container:ShiftDrop.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

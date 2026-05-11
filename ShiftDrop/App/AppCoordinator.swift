@@ -23,6 +23,7 @@ final class AppCoordinator {
             image: UIImage(named: "calculate.pdf"),
             tag: 0
         )
+        calculation.tabBarItem.accessibilityIdentifier = "tab.calculation"
 
         let history = SecondViewController(dependencies: dependencies)
         history.tabBarItem = UITabBarItem(
@@ -30,6 +31,7 @@ final class AppCoordinator {
             image: UIImage(named: "time.pdf"),
             tag: 1
         )
+        history.tabBarItem.accessibilityIdentifier = "tab.history"
 
         let profile = ThirdViewController(dependencies: dependencies)
         profile.tabBarItem = UITabBarItem(
@@ -37,6 +39,7 @@ final class AppCoordinator {
             image: UIImage(named: "user.pdf"),
             tag: 2
         )
+        profile.tabBarItem.accessibilityIdentifier = "tab.profile"
 
         let tabBarController = UITabBarController()
         tabBarController.setViewControllers([calculation, history, profile], animated: false)
