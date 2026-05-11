@@ -12,13 +12,15 @@ UIKit: расчёт и оформление доставки.
 
 Откройте `ShiftDrop.xcodeproj`, схема **ShiftDrop**, Run.
 
-Тесты: **Product → Test** (схема **ShiftDrop**, симулятор iOS 17.5+).
+Тесты: **Product → Test** (схема **ShiftDrop**, симулятор iOS 17.5+): юнит-тесты `ShiftDropTests`, UI smoke `ShiftDropUITests`.
 
 Бэкенд: ключ **`API_BASE_URL`** в `ShiftDrop/Resources/Info.plist`.
 
 Слои и сеть: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Опционально: `brew install swiftlint && swiftlint`
+
+Ветка разработки по умолчанию — **`main`** (CI и Dependabot настроены под неё).
 
 ## Подпись
 

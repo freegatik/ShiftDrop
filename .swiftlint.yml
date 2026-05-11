@@ -16,5 +16,6 @@ opt_in_rules:
   - overridden_super_call
 included:
   - ShiftDrop
+  - ShiftDropUITests
 excluded:
   - Pods

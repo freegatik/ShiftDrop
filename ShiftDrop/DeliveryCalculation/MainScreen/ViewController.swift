@@ -144,6 +144,7 @@ class ViewController: UIViewController, PickButtonViewDelegate {
         self.calculateButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         self.calculateButton.backgroundColor = UIColor(named: "ButtonColor")
         self.calculateButton.layer.cornerRadius = 30
+        self.calculateButton.accessibilityIdentifier = "calc.primaryAction"
     }
     
     @objc func showShippingMethodScreen() {
