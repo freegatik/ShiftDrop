@@ -82,3 +82,7 @@ xcrun xccov view --report /tmp/ShiftDrop.xcresult | head -30
 ```
 
 Lint: `swiftlint lint --strict` (see [`.swiftlint.yml`](.swiftlint.yml)).
+
+## License
+
+The app source is available under the [MIT License](LICENSE). The full text is in `LICENSE` in the repo root.
